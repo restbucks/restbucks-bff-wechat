@@ -26,6 +26,11 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.14.8'
 
     compile("org.springframework.boot:spring-boot-starter-web")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile('junit:junit:4.12') {
+        exclude group: 'org.hamcrest'
+    }
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
 }
 
 idea {
@@ -41,5 +46,5 @@ test {
 test.finalizedBy jacocoTestReport
 
 checkstyle {
-    toolVersion ="7.1.1"
+    toolVersion = "7.1.1"
 }
