@@ -1,0 +1,45 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+    }
+}
+
+version = "0.1.0"
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: "jacoco"
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'spring-boot'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.14.8'
+    testCompileOnly 'org.projectlombok:lombok:1.14.8'
+
+    compile("org.springframework.boot:spring-boot-starter-web")
+}
+
+idea {
+    module {
+        scopes.COMPILE.plus += [configurations.compileOnly]
+    }
+}
+
+test {
+    exclude "**/*Learning*" //exclude learning test
+}
+
+test.finalizedBy jacocoTestReport
+
+checkstyle {
+    toolVersion ="7.1.1"
+}
