@@ -15,4 +15,5 @@ public class WeChatRuntime {
 
     private String appId = "wechatAppId";
     private String appSecret = "wechatAppSecret";
+    private String baseUrl = "https://api.wechat.com";
 }
