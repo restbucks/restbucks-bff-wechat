@@ -1,6 +1,5 @@
 package com.restbucks.bff.wechatstore.http;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.restbucks.bff.wechatstore.time.Clock;
 import com.restbucks.bff.wechatstore.wechat.*;
@@ -47,10 +46,7 @@ public class WeChatOauthControllerTest {
     private ServerRuntime serverRuntime;
 
     @SpyBean
-    private JwtRuntime jwtRuntime;
-
-    @SpyBean
-    private ObjectMapper objectMapper;
+    private JwtIssuer jwtIssuer;
 
     @MockBean
     private WeChatClient weChatClient;
@@ -60,6 +56,7 @@ public class WeChatOauthControllerTest {
 
     @MockBean
     private CsrfTokenGenerator csrfTokenGenerator;
+
 
     @Test
     public void itShouldRedirectToWeChatToFinishOauthProtocol() throws Exception {
@@ -115,27 +112,26 @@ public class WeChatOauthControllerTest {
 
         // verify userCookie
         assertThat(userCookie.isHttpOnly(), is(true));
-        assertThat(userCookie.getMaxAge(), is(jwtRuntime.getExpiresInSeconds()));
+        assertThat(userCookie.getMaxAge(), is(jwtIssuer.getExpiresInSeconds()));
 
-        Jws<Claims> claims = Jwts.parser().setSigningKey(jwtRuntime.getSigningKey()).parseClaimsJws(userCookie.getValue());
+        Jws<Claims> claims = Jwts.parser().setSigningKey(jwtIssuer.getSigningKey()).parseClaimsJws(userCookie.getValue());
         String subject = claims.getBody().getSubject();
         assertThat(JsonPath.read(subject, "openId"), is(user.getOpenId().getValue()));
         assertThat(claims.getBody().getIssuedAt(),
                 equalTo(Date.from(now.withNano(0).toInstant()))); //Jwts wll remove the nano seconds when generating the jwt
         assertThat(claims.getBody().getExpiration(),
-                equalTo(Date.from(now.plusSeconds(jwtRuntime.getExpiresInSeconds()).withNano(0).toInstant())));
+                equalTo(Date.from(now.plusSeconds(jwtIssuer.getExpiresInSeconds()).withNano(0).toInstant())));
         assertThat(claims.getBody().get("csrfToken"),
                 equalTo(csrfToken));
 
         // verify userIdentifiedCookie
         assertThat(userIdentifiedCookie.getValue(), is("true"));
         assertThat(userIdentifiedCookie.isHttpOnly(), is(false));
-        assertThat(userIdentifiedCookie.getMaxAge(), is(jwtRuntime.getExpiresInSeconds()));
+        assertThat(userIdentifiedCookie.getMaxAge(), is(jwtIssuer.getExpiresInSeconds()));
 
         // verify csrfTokenCookie
         assertThat(csrfTokenCookie.getValue(), is(csrfToken));
         assertThat(csrfTokenCookie.isHttpOnly(), is(false));
-        assertThat(csrfTokenCookie.getMaxAge(), is(jwtRuntime.getExpiresInSeconds()));
+        assertThat(csrfTokenCookie.getMaxAge(), is(jwtIssuer.getExpiresInSeconds()));
     }
-
 }

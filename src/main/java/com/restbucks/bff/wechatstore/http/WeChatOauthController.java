@@ -1,12 +1,9 @@
 package com.restbucks.bff.wechatstore.http;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.restbucks.bff.wechatstore.time.Clock;
 import com.restbucks.bff.wechatstore.wechat.WeChatClient;
 import com.restbucks.bff.wechatstore.wechat.WeChatOauthAccessToken;
 import com.restbucks.bff.wechatstore.wechat.WeChatRuntime;
 import com.restbucks.bff.wechatstore.wechat.WeChatUser;
-import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,10 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import static io.jsonwebtoken.SignatureAlgorithm.HS512;
 import static java.lang.String.format;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -36,16 +32,10 @@ public class WeChatOauthController {
     private WeChatRuntime weChatRuntime;
 
     @Autowired
-    private JwtRuntime jwtRuntime;
-
-    @Autowired
-    private Clock clock;
+    private JwtIssuer jwtIssuer;
 
     @Autowired
     private WeChatClient weChatClient;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private CsrfTokenGenerator csrfTokenGenerator;
@@ -73,22 +63,16 @@ public class WeChatOauthController {
 
         WeChatOauthAccessToken accessToken = weChatClient.exchangeAccessTokenWith(code);
         WeChatUser weChatUser = weChatClient.exchangeUserProfileWith(accessToken);
-        ZonedDateTime now = clock.now();
         String csrfToken = csrfTokenGenerator.generate();
 
-        String userJwt = Jwts.builder()
-                .setSubject(objectMapper.writeValueAsString(weChatUser))
-                .setIssuer("Restbucks")
-                .claim("csrfToken", csrfToken)
-                .setIssuedAt(Date.from(now.toInstant()))
-                .setExpiration(Date.from(now.plusSeconds(jwtRuntime.getExpiresInSeconds()).toInstant()))
-                .signWith(HS512, jwtRuntime.getSigningKey())
-                .compact();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("csrfToken", csrfToken);
+        String userJwt = jwtIssuer.buildUserJwt(weChatUser, claims);
 
         URL raw = new URL(state);
-        response.addCookie(newServerCookie("wechatStoreUser", userJwt, jwtRuntime.getExpiresInSeconds()));
-        response.addCookie(newClientCookie("wechatStoreUserIdentified", "true", jwtRuntime.getExpiresInSeconds()));
-        response.addCookie(newClientCookie("wechatStoreCsrfToken", csrfToken, jwtRuntime.getExpiresInSeconds()));
+        response.addCookie(newServerCookie("wechatStoreUser", userJwt, jwtIssuer.getExpiresInSeconds()));
+        response.addCookie(newClientCookie("wechatStoreUserIdentified", "true", jwtIssuer.getExpiresInSeconds()));
+        response.addCookie(newClientCookie("wechatStoreCsrfToken", csrfToken, jwtIssuer.getExpiresInSeconds()));
         response.sendRedirect(raw.toString());
     }
 
