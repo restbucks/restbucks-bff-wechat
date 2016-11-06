@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.servlet.http.Cookie;
 import java.net.URLEncoder;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -101,11 +102,14 @@ public class WeChatOauthControllerTest {
                 .andReturn();
 
 
-        String userJwt = mvcResult.getResponse().getCookie("wechatStoreUser").getValue();
+        Cookie userCookie = mvcResult.getResponse().getCookie("wechatStoreUser");
+        Cookie userIdentifiedCookie = mvcResult.getResponse().getCookie("wechatStoreUserIdentified");
 
-        Jws<Claims> claims = Jwts.parser().setSigningKey(jwtRuntime.getSigningKey()).parseClaimsJws(userJwt);
+        // verify userCookie
+        assertThat(userCookie.isHttpOnly(), is(true));
+        assertThat(userCookie.getMaxAge(), is(jwtRuntime.getExpiresInSeconds()));
 
-
+        Jws<Claims> claims = Jwts.parser().setSigningKey(jwtRuntime.getSigningKey()).parseClaimsJws(userCookie.getValue());
         String subject = claims.getBody().getSubject();
         assertThat(JsonPath.read(subject, "openId"), is(user.getOpenId().getValue()));
         assertThat(claims.getBody().getIssuedAt(),
@@ -113,6 +117,10 @@ public class WeChatOauthControllerTest {
         assertThat(claims.getBody().getExpiration(),
                 equalTo(Date.from(now.plusSeconds(jwtRuntime.getExpiresInSeconds()).withNano(0).toInstant())));
 
+        // verify userIdentifiedCookie
+        assertThat(userIdentifiedCookie.getValue(), is("true"));
+        assertThat(userIdentifiedCookie.isHttpOnly(), is(false));
+        assertThat(userIdentifiedCookie.getMaxAge(), is(jwtRuntime.getExpiresInSeconds()));
     }
 
 }

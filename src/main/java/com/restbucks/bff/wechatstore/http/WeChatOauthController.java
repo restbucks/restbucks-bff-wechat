@@ -81,8 +81,17 @@ public class WeChatOauthController {
                 .compact();
 
         URL raw = new URL(state);
-        response.addCookie(newCookie("wechatStoreUser", userJwt, true, jwtRuntime.getExpiresInSeconds()));
+        response.addCookie(newServerCookie("wechatStoreUser", userJwt, jwtRuntime.getExpiresInSeconds()));
+        response.addCookie(newClientCookie("wechatStoreUserIdentified", "true", jwtRuntime.getExpiresInSeconds()));
         response.sendRedirect(raw.toString());
+    }
+
+    private Cookie newServerCookie(String key, String value, int expiresInSeconds) {
+        return newCookie(key, value, true, expiresInSeconds);
+    }
+
+    private Cookie newClientCookie(String key, String value, int expiresInSeconds) {
+        return newCookie(key, value, false, expiresInSeconds);
     }
 
     private Cookie newCookie(String key, String value, boolean httpOnly, int expiresInSeconds) {
