@@ -92,7 +92,7 @@ public class WeChatOauthControllerTest {
         when(weChatClient.exchangeAccessTokenWith(code))
                 .thenReturn(accessToken);
 
-        when(weChatClient.exchangeUserWith(accessToken))
+        when(weChatClient.exchangeUserProfileWith(accessToken))
                 .thenReturn(user);
 
         when(clock.now()).thenReturn(now);

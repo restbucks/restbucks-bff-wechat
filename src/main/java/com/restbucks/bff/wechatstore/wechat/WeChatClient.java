@@ -4,5 +4,5 @@ public interface WeChatClient {
 
     WeChatOauthAccessToken exchangeAccessTokenWith(String code);
 
-    WeChatUser exchangeUserWith(WeChatOauthAccessToken accessToken);
+    WeChatUser exchangeUserProfileWith(WeChatOauthAccessToken accessToken);
 }

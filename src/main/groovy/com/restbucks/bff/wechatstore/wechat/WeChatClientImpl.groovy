@@ -47,7 +47,24 @@ class WeChatClientImpl implements WeChatClient {
     }
 
     @Override
-    WeChatUser exchangeUserWith(WeChatOauthAccessToken accessToken) {
-        return null
+    WeChatUser exchangeUserProfileWith(WeChatOauthAccessToken accessToken) {
+        def representation = restTemplate
+                .getForObject("${weChatRuntime.getBaseUrl()}/sns/userinfo?openid={openId}&access_token={accessToken}",
+                String.class,
+                accessToken.openId.value,
+                accessToken.accessToken);
+
+        log.debug("Got user profile: {}", representation)
+
+        JsonSlurper jsonSlurper = new JsonSlurper()
+
+        def userProfile = jsonSlurper.parseText(representation)
+
+        WeChatUser user = new WeChatUser()
+        user.setOpenId(OpenId.valueOf(userProfile.openid))
+        user.setNickname(userProfile.nickname)
+        user.setAvatar(userProfile.headimgurl)
+
+        user
     }
 }

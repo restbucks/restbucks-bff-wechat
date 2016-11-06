@@ -72,7 +72,7 @@ public class WeChatOauthController {
                                             HttpServletResponse response) throws IOException {
 
         WeChatOauthAccessToken accessToken = weChatClient.exchangeAccessTokenWith(code);
-        WeChatUser weChatUser = weChatClient.exchangeUserWith(accessToken);
+        WeChatUser weChatUser = weChatClient.exchangeUserProfileWith(accessToken);
         ZonedDateTime now = clock.now();
         String csrfToken = csrfTokenGenerator.generate();
 
