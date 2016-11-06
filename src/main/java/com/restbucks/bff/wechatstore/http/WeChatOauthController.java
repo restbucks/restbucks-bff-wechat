@@ -47,6 +47,9 @@ public class WeChatOauthController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private CsrfTokenGenerator csrfTokenGenerator;
+
     @RequestMapping(value = "/wechat/browser", method = GET)
     public void askWeChatWhoTheUserIs(@RequestParam(name = "origin") String origin,
                                       HttpServletResponse response) throws IOException {
@@ -71,10 +74,12 @@ public class WeChatOauthController {
         WeChatOauthAccessToken accessToken = weChatClient.exchangeAccessTokenWith(code);
         WeChatUser weChatUser = weChatClient.exchangeUserWith(accessToken);
         ZonedDateTime now = clock.now();
+        String csrfToken = csrfTokenGenerator.generate();
 
         String userJwt = Jwts.builder()
                 .setSubject(objectMapper.writeValueAsString(weChatUser))
                 .setIssuer("Restbucks")
+                .claim("csrfToken", csrfToken)
                 .setIssuedAt(Date.from(now.toInstant()))
                 .setExpiration(Date.from(now.plusSeconds(jwtRuntime.getExpiresInSeconds()).toInstant()))
                 .signWith(HS512, jwtRuntime.getSigningKey())
@@ -83,6 +88,7 @@ public class WeChatOauthController {
         URL raw = new URL(state);
         response.addCookie(newServerCookie("wechatStoreUser", userJwt, jwtRuntime.getExpiresInSeconds()));
         response.addCookie(newClientCookie("wechatStoreUserIdentified", "true", jwtRuntime.getExpiresInSeconds()));
+        response.addCookie(newClientCookie("wechatStoreCsrfToken", csrfToken, jwtRuntime.getExpiresInSeconds()));
         response.sendRedirect(raw.toString());
     }
 

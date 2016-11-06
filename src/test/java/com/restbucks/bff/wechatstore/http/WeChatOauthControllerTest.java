@@ -58,6 +58,9 @@ public class WeChatOauthControllerTest {
     @MockBean
     private Clock clock;
 
+    @MockBean
+    private CsrfTokenGenerator csrfTokenGenerator;
+
     @Test
     public void itShouldRedirectToWeChatToFinishOauthProtocol() throws Exception {
 
@@ -84,6 +87,7 @@ public class WeChatOauthControllerTest {
         WeChatOauthAccessToken accessToken = new WeChatOauthAccessTokenFixture().build();
         WeChatUser user = new WeChatUserFixture().with(accessToken.getOpenId()).build();
         ZonedDateTime now = ZonedDateTime.now();
+        String csrfToken = "csrfToken";
 
         when(weChatClient.exchangeAccessTokenWith(code))
                 .thenReturn(accessToken);
@@ -92,6 +96,9 @@ public class WeChatOauthControllerTest {
                 .thenReturn(user);
 
         when(clock.now()).thenReturn(now);
+
+        when(csrfTokenGenerator.generate())
+                .thenReturn(csrfToken);
 
         MvcResult mvcResult = this.mvc.perform(get("/wechat/browser/user")
                 .param("state", state) // it seems that the controller will decode the parameter automatically only for browser request
@@ -104,6 +111,7 @@ public class WeChatOauthControllerTest {
 
         Cookie userCookie = mvcResult.getResponse().getCookie("wechatStoreUser");
         Cookie userIdentifiedCookie = mvcResult.getResponse().getCookie("wechatStoreUserIdentified");
+        Cookie csrfTokenCookie = mvcResult.getResponse().getCookie("wechatStoreCsrfToken");
 
         // verify userCookie
         assertThat(userCookie.isHttpOnly(), is(true));
@@ -116,11 +124,18 @@ public class WeChatOauthControllerTest {
                 equalTo(Date.from(now.withNano(0).toInstant()))); //Jwts wll remove the nano seconds when generating the jwt
         assertThat(claims.getBody().getExpiration(),
                 equalTo(Date.from(now.plusSeconds(jwtRuntime.getExpiresInSeconds()).withNano(0).toInstant())));
+        assertThat(claims.getBody().get("csrfToken"),
+                equalTo(csrfToken));
 
         // verify userIdentifiedCookie
         assertThat(userIdentifiedCookie.getValue(), is("true"));
         assertThat(userIdentifiedCookie.isHttpOnly(), is(false));
         assertThat(userIdentifiedCookie.getMaxAge(), is(jwtRuntime.getExpiresInSeconds()));
+
+        // verify csrfTokenCookie
+        assertThat(csrfTokenCookie.getValue(), is(csrfToken));
+        assertThat(csrfTokenCookie.isHttpOnly(), is(false));
+        assertThat(csrfTokenCookie.getMaxAge(), is(jwtRuntime.getExpiresInSeconds()));
     }
 
 }
