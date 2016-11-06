@@ -27,7 +27,7 @@ class WeChatClientImpl implements WeChatClient {
     WeChatOauthAccessToken exchangeAccessTokenWith(String code) {
 
         def representation = restTemplate
-                .getForObject("${weChatRuntime.getBaseUrl()}/sns/oauth2/access_token?appid={appId}&secret={appSecret}&code={code}&grant_type=authorization_code",
+                .getForObject("/sns/oauth2/access_token?appid={appId}&secret={appSecret}&code={code}&grant_type=authorization_code",
                 String.class,
                 weChatRuntime.getAppId(),
                 weChatRuntime.getAppSecret(),
@@ -49,7 +49,7 @@ class WeChatClientImpl implements WeChatClient {
     @Override
     WeChatUser exchangeUserProfileWith(WeChatOauthAccessToken accessToken) {
         def representation = restTemplate
-                .getForObject("${weChatRuntime.getBaseUrl()}/sns/userinfo?openid={openId}&access_token={accessToken}",
+                .getForObject("/sns/userinfo?openid={openId}&access_token={accessToken}",
                 String.class,
                 accessToken.openId.value,
                 accessToken.accessToken);

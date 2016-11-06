@@ -20,8 +20,9 @@ class WechatClientImplTest extends Specification {
     int port = ThreadLocalRandom.current().nextInt(14000, 15000)
     RequestHit hit = requestHit()
     HttpServer server = httpServer(port, hit, log())
-    RestTemplate restTemplate = new RestTemplate()
+    RestTemplate restTemplate
     Clock clock = Mock()
+    WeChatConfiguration weChatConfiguration = new WeChatConfiguration(weChatRuntime);
 
     def setup() {
         weChatRuntime.appId = "appId"
@@ -29,7 +30,7 @@ class WechatClientImplTest extends Specification {
         weChatRuntime.baseUrl = "http://localhost:" + port
 
         subject.weChatRuntime = weChatRuntime
-        subject.restTemplate = restTemplate
+        subject.restTemplate = weChatConfiguration.restTemplate()
         subject.clock = clock
     }
 

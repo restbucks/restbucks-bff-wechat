@@ -5,7 +5,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+@Component
+@ConfigurationProperties("wechatstore.jwt")
 @Getter
 @Setter
 @ToString(exclude = "signingKey")//to exclude credentials from logs
