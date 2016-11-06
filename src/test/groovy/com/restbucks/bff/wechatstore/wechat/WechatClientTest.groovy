@@ -15,7 +15,7 @@ import static com.github.dreamhead.moco.Runner.running
 
 class WechatClientTest extends Specification {
 
-    WeChatClient subject = new WeChatClient()
+    WeChatClientImpl subject = new WeChatClientImpl()
     WeChatRuntime weChatRuntime = new WeChatRuntime()
     int port = ThreadLocalRandom.current().nextInt(14000, 15000)
     RequestHit hit = requestHit()

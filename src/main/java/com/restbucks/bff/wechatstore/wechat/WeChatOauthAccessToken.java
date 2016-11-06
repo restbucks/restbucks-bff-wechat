@@ -1,14 +1,14 @@
 package com.restbucks.bff.wechatstore.wechat;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.ZonedDateTime;
 
 @ToString
 @EqualsAndHashCode
 @Getter
+@Setter(AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WeChatOauthAccessToken {
 
     private OpenId openId;

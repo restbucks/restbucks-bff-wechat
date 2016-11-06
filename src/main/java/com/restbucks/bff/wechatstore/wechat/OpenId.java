@@ -8,6 +8,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Getter
 public class OpenId {
+
     private String value;
 
     private OpenId(String value) {

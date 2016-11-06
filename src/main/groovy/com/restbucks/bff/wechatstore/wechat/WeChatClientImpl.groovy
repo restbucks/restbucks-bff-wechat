@@ -10,9 +10,9 @@ import org.springframework.web.client.RestTemplate
 import javax.annotation.Resource
 
 @Component
-class WeChatClient {
+class WeChatClientImpl implements WeChatClient {
 
-    private static final Logger log = LoggerFactory.getLogger(WeChatClient.class)
+    private static final Logger log = LoggerFactory.getLogger(WeChatClientImpl.class)
 
     @Resource(name = "wechat.RestTemplate")
     RestTemplate restTemplate
@@ -23,7 +23,8 @@ class WeChatClient {
     @Resource
     Clock clock
 
-    public WeChatOauthAccessToken exchangeAccessTokenWith(String code) {
+    @Override
+    WeChatOauthAccessToken exchangeAccessTokenWith(String code) {
 
         def representation = restTemplate
                 .getForObject("${weChatRuntime.getBaseUrl()}/sns/oauth2/access_token?appid={appId}&secret={appSecret}&code={code}&grant_type=authorization_code",
@@ -43,5 +44,10 @@ class WeChatClient {
                 accessToken.refresh_token,
                 clock.now().plusSeconds(accessToken.expires_in),
                 accessToken.scope)
+    }
+
+    @Override
+    WeChatUser exchangeUserWith(WeChatOauthAccessToken accessToken) {
+        return null
     }
 }
