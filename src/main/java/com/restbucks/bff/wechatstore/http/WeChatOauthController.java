@@ -49,7 +49,7 @@ public class WeChatOauthController {
         String redirect = format("https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect",
                 weChatRuntime.getAppId(),
                 URLEncoder.encode(endpointUrl, "UTF-8"),
-                "snsapi_base",
+                "snsapi_userinfo", // cannot get user profile with "snsapi_base", got unauthorized
                 URLEncoder.encode(origin, "UTF-8"));
 
         log.debug("We don't know who u are, redirecting you from {} to {}", origin, redirect);

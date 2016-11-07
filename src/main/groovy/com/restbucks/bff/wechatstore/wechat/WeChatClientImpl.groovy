@@ -55,7 +55,7 @@ class WeChatClientImpl implements WeChatClient {
                 accessToken.accessToken);
 
         log.debug("Got user profile: {}", representation)
-
+        //TODO handling error {"errcode":48001,"errmsg":"api unauthorized, hints: [ req_id: nkMUeA0587ns83 ]"}
         JsonSlurper jsonSlurper = new JsonSlurper()
 
         def userProfile = jsonSlurper.parseText(representation)

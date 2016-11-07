@@ -65,7 +65,7 @@ public class WeChatOauthControllerTest {
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(
-                        format("https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect",
+                        format("https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=%s#wechat_redirect",
                                 weChatRuntime.getAppId(),
                                 "http%3A%2F%2Flocalhost%3A8080%2Fwechat%2Fbrowser%2Fuser",
                                 encodedOrigin)));
