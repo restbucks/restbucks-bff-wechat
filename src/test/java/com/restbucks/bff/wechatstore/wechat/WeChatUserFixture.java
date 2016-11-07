@@ -7,12 +7,12 @@ public class WeChatUserFixture {
 
     public WeChatUserFixture() {
         target.setOpenId(OpenId.valueOf(UUID.randomUUID().toString()));
+        target.setNickname("John Doe");
+        target.setAvatar("https://avatar.com/johndoe");
     }
 
     public WeChatUserFixture with(OpenId openId) {
         target.setOpenId(openId);
-        target.setNickname("John Doe");
-        target.setAvatar("https://avatar.com/johndoe");
         return this;
     }
 
