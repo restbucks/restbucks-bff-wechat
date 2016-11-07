@@ -1,6 +1,7 @@
 package com.restbucks.bff.wechatstore.http;
 
 import com.restbucks.bff.wechatstore.http.jwt.JwtIssuer;
+import com.restbucks.bff.wechatstore.http.views.WeChatUserResourceAssembler;
 import com.restbucks.bff.wechatstore.wechat.WeChatUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(WeChatRestController.class)
-public class WeChatRestControllerTest {
+@WebMvcTest({WeChatUserRestController.class, WeChatUserResourceAssembler.class})
+public class WeChatUserRestControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -46,7 +47,7 @@ public class WeChatRestControllerTest {
                 .header("x-csrf-token", csrfToken))
                 .andDo(print())
                 .andExpect(status().isOk())
-                //.andExpect(jsonPath("openId").doesNotExist()) TODO make is invisible
+                .andExpect(jsonPath("openId").doesNotExist()) // hide internal state
                 .andExpect(jsonPath("nickname", is(user.getNickname())))
                 .andExpect(jsonPath("avatar", is(user.getAvatar())))
                 .andExpect(jsonPath("_links.self.href", is("http://localhost/wechat/me")));
