@@ -1,6 +1,7 @@
 package com.restbucks.bff.wechatstore.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restbucks.bff.wechatstore.http.jwt.JwtIssuer;
 import com.restbucks.bff.wechatstore.time.Clock;
 import com.restbucks.bff.wechatstore.wechat.WeChatUser;
 import com.restbucks.bff.wechatstore.wechat.WeChatUserFixture;

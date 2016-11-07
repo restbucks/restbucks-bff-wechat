@@ -1,4 +1,4 @@
-package com.restbucks.bff.wechatstore.http;
+package com.restbucks.bff.wechatstore.http.csrf;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Component;

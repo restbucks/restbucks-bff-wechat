@@ -1,5 +1,6 @@
 package com.restbucks.bff.wechatstore.http;
 
+import com.restbucks.bff.wechatstore.http.jwt.JwtIssuer;
 import com.restbucks.bff.wechatstore.wechat.WeChatUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

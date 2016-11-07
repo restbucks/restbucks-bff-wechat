@@ -1,5 +1,6 @@
 package com.restbucks.bff.wechatstore.http;
 
+import com.restbucks.bff.wechatstore.http.jwt.JwtIssuer;
 import com.restbucks.bff.wechatstore.wechat.WeChatUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;

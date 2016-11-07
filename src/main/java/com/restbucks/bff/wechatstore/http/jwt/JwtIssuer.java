@@ -1,4 +1,4 @@
-package com.restbucks.bff.wechatstore.http;
+package com.restbucks.bff.wechatstore.http.jwt;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
