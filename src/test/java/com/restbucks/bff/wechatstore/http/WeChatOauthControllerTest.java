@@ -1,11 +1,7 @@
 package com.restbucks.bff.wechatstore.http;
 
-import com.jayway.jsonpath.JsonPath;
 import com.restbucks.bff.wechatstore.time.Clock;
 import com.restbucks.bff.wechatstore.wechat.*;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +15,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import javax.servlet.http.Cookie;
 import java.net.URLEncoder;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 import static java.lang.String.format;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -45,7 +39,7 @@ public class WeChatOauthControllerTest {
     @SpyBean
     private ServerRuntime serverRuntime;
 
-    @SpyBean
+    @MockBean
     private JwtIssuer jwtIssuer;
 
     @MockBean
@@ -82,9 +76,11 @@ public class WeChatOauthControllerTest {
         String code = "codeToExchangeWeChatUserAccessToken";
         String state = "http://www.example.com/index.html?a=b#/route";
         WeChatOauthAccessToken accessToken = new WeChatOauthAccessTokenFixture().build();
-        WeChatUser user = new WeChatUserFixture().with(accessToken.getOpenId()).build();
+        UserJwtFixture userJwtFixture = new UserJwtFixture();
+        String userJwt = userJwtFixture.with(new WeChatUserFixture().with(accessToken.getOpenId())).build();
+        WeChatUser user = userJwtFixture.user();
+        String csrfToken = userJwtFixture.csrfToken();
         ZonedDateTime now = ZonedDateTime.now();
-        String csrfToken = "csrfToken";
 
         when(weChatClient.exchangeAccessTokenWith(code))
                 .thenReturn(accessToken);
@@ -96,6 +92,9 @@ public class WeChatOauthControllerTest {
 
         when(csrfTokenGenerator.generate())
                 .thenReturn(csrfToken);
+
+        when(jwtIssuer.buildUserJwt(user, csrfToken))
+                .thenReturn(userJwt);
 
         MvcResult mvcResult = this.mvc.perform(get("/wechat/browser/user")
                 .param("state", state) // it seems that the controller will decode the parameter automatically only for browser request
@@ -111,18 +110,9 @@ public class WeChatOauthControllerTest {
         Cookie csrfTokenCookie = mvcResult.getResponse().getCookie("wechatStoreCsrfToken");
 
         // verify userCookie
+        assertThat(userCookie.getValue(), is(userJwt));
         assertThat(userCookie.isHttpOnly(), is(true));
         assertThat(userCookie.getMaxAge(), is(jwtIssuer.getExpiresInSeconds()));
-
-        Jws<Claims> claims = Jwts.parser().setSigningKey(jwtIssuer.getSigningKey()).parseClaimsJws(userCookie.getValue());
-        String subject = claims.getBody().getSubject();
-        assertThat(JsonPath.read(subject, "openId"), is(user.getOpenId().getValue()));
-        assertThat(claims.getBody().getIssuedAt(),
-                equalTo(Date.from(now.withNano(0).toInstant()))); //Jwts wll remove the nano seconds when generating the jwt
-        assertThat(claims.getBody().getExpiration(),
-                equalTo(Date.from(now.plusSeconds(jwtIssuer.getExpiresInSeconds()).withNano(0).toInstant())));
-        assertThat(claims.getBody().get("csrfToken"),
-                equalTo(csrfToken));
 
         // verify userIdentifiedCookie
         assertThat(userIdentifiedCookie.getValue(), is("true"));

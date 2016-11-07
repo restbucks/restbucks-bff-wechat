@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.jsonwebtoken.SignatureAlgorithm.HS512;
@@ -40,6 +41,13 @@ public class JwtIssuer {
     private String signingKey = "shouldBeARandomString";
 
     private int expiresInSeconds = 3600;
+
+
+    public String buildUserJwt(WeChatUser weChatUser, String csrfToken) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("csrfToken", csrfToken);
+        return buildUserJwt(weChatUser, claims);
+    }
 
     public String buildUserJwt(WeChatUser weChatUser, Map<String, Object> claims) {
         try {

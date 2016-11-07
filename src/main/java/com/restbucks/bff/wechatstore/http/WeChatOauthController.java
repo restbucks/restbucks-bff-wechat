@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.String.format;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -65,9 +63,7 @@ public class WeChatOauthController {
         WeChatUser weChatUser = weChatClient.exchangeUserProfileWith(accessToken);
         String csrfToken = csrfTokenGenerator.generate();
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("csrfToken", csrfToken);
-        String userJwt = jwtIssuer.buildUserJwt(weChatUser, claims);
+        String userJwt = jwtIssuer.buildUserJwt(weChatUser, csrfToken);
 
         URL raw = new URL(state);
         response.addCookie(newServerCookie("wechatStoreUser", userJwt, jwtIssuer.getExpiresInSeconds()));
