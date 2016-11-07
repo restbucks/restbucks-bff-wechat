@@ -24,8 +24,9 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.14.8'
 
     compile 'org.codehaus.groovy:groovy-all:2.4.7'
-    compile("org.springframework.boot:spring-boot-starter-web")
+    compile "org.springframework.boot:spring-boot-starter-web"
     compile 'io.jsonwebtoken:jjwt:0.6.0'
+    compile "org.springframework.boot:spring-boot-starter-hateoas"
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 

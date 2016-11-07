@@ -55,7 +55,9 @@ public class WeChatRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 //.andExpect(jsonPath("openId").doesNotExist()) TODO make is invisible
-                .andExpect(jsonPath("nickname", is(user.getNickname())));
+                .andExpect(jsonPath("nickname", is(user.getNickname())))
+                .andExpect(jsonPath("avatar", is(user.getAvatar())))
+                .andExpect(jsonPath("_links.self.href", is("http://localhost/wechat/me")));
 
     }
 }

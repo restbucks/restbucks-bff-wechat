@@ -11,6 +11,8 @@ public class WeChatUserFixture {
 
     public WeChatUserFixture with(OpenId openId) {
         target.setOpenId(openId);
+        target.setNickname("John Doe");
+        target.setAvatar("https://avatar.com/johndoe");
         return this;
     }
 
