@@ -28,7 +28,7 @@ dependencies {
     compile 'io.jsonwebtoken:jjwt:0.6.0'
     compile "org.springframework.boot:spring-boot-starter-hateoas"
     compile 'org.modelmapper:modelmapper:0.7.7'
-
+    compile group: 'org.mitre.dsmiley.httpproxy', name: 'smiley-http-proxy-servlet', version: '1.8'
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 

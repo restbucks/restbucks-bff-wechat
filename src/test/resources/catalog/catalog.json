@@ -1,0 +1,64 @@
+[
+  {
+    "description": "list_all_products",
+    "request": {
+      "uri": "/rel/catalogs",
+      "method": "GET"
+    },
+    "response": {
+      "json": {
+        "_embedded": {
+          "coffee": [
+            {
+              "name": "latte",
+              "size": "medium",
+              "price": "20.00",
+              "_links": {
+                "self": {
+                  "href": "http://catalogs.restbucks.com/rel/coffe/latte-medium"
+                }
+              }
+            },
+            {
+              "name": "latte",
+              "size": "large",
+              "price": "25.00",
+              "_links": {
+                "self": {
+                  "href": "http://catalogs.restbucks.com/rel/coffe/latte-large"
+                }
+              }
+            },
+            {
+              "name": "black tee",
+              "size": "medium",
+              "price": "15.00",
+              "_links": {
+                "self": {
+                  "href": "http://catalogs.restbucks.com/rel/coffe/black-tee-medium"
+                }
+              }
+            }
+          ],
+          "snacks": [
+            {
+              "name": "cookie",
+              "size": "medium",
+              "price": "15.00",
+              "_links": {
+                "self": {
+                  "href": "http://catalogs.restbucks.com/rel/snacks/cookie-medium"
+                }
+              }
+            }
+          ]
+        },
+        "_links": {
+          "self": {
+            "href": "http://catalogs.restbucks.com/rel/catalogs"
+          }
+        }
+      }
+    }
+  }
+]
