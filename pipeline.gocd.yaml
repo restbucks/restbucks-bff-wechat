@@ -1,0 +1,20 @@
+pipelines:
+  restbucks-bff-wechatstore: 
+    group: restbucks-wechatstore
+    materials:
+      src: 
+        git: https://github.com/restbucks/restbucks-bff-wechatstore.git
+        branch: master
+    stages:
+      - commit: 
+          jobs:
+            build:
+              tasks:
+               - script: ./gradlew clean build
+              artifacts:
+               - build:
+                   source: build/libs/*.jar
+                   destination: build/libs
+               - test:
+                   source: build/spock-reports
+                   destination: build/spock-reports
