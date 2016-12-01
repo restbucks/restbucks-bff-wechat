@@ -1,3 +1,4 @@
 proxy:
   catalogService:
+    target: http://localhost:51395 #mandatory
     mapping: /catalogs/*

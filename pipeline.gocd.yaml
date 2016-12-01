@@ -17,4 +17,7 @@ pipelines:
                    destination: build/libs
                - test:
                    source: build/spock-reports
-                   destination: build/spock-reports
+                   destination: build
+               - test:
+                   source: build/reports
+                   destination: build

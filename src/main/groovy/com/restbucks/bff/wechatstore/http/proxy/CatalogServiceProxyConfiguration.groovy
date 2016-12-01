@@ -15,7 +15,7 @@ public class CatalogServiceProxyConfiguration implements EnvironmentAware {
 
     @Bean
     public ServletRegistrationBean servletRegistrationBean() {
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new ProxyServlet(),
+        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new CatalogsProxyServlet(),
                 propertyResolver.getProperty("mapping"));
         servletRegistrationBean.addInitParameter("targetUri",
                 propertyResolver.getProperty("target"));
